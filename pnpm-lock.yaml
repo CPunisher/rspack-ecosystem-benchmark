@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@rspack/core@1.3.2':
+    hash: ly6njyzymtf65klwja2j2pz4nq
+    path: patches/@rspack__core@1.3.2.patch
+
 importers:
 
   .:
@@ -19,7 +24,7 @@ importers:
         version: 1.3.2(@rspack/core@1.3.2)
       '@rspack/core':
         specifier: ^1.3.2
-        version: 1.3.2
+        version: 1.3.2(patch_hash=ly6njyzymtf65klwja2j2pz4nq)
       '@rspack/plugin-react-refresh':
         specifier: 1.0.0
         version: 1.0.0(react-refresh@0.14.0)
@@ -1935,7 +1940,7 @@ packages:
         optional: true
     dependencies:
       '@discoveryjs/json-ext': 0.5.7
-      '@rspack/core': 1.3.2
+      '@rspack/core': 1.3.2(patch_hash=ly6njyzymtf65klwja2j2pz4nq)
       '@rspack/dev-server': 1.1.1(@rspack/core@1.3.2)
       colorette: 2.0.20
       exit-hook: 4.0.0
@@ -1953,7 +1958,7 @@ packages:
       - webpack-cli
     dev: false
 
-  /@rspack/core@1.3.2:
+  /@rspack/core@1.3.2(patch_hash=ly6njyzymtf65klwja2j2pz4nq):
     resolution: {integrity: sha512-QbEn1SkNW3b89KTlSkp6OHdvw3DhpL6tSdDhsOlldw3LoRBy4fx80Z9W9lmg+g+8DjTAs1Z1ysElEFtAN69AZg==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
@@ -1971,6 +1976,7 @@ packages:
       caniuse-lite: 1.0.30001709
       tinypool: 1.0.2
     dev: false
+    patched: true
 
   /@rspack/dev-server@1.1.1(@rspack/core@1.3.2):
     resolution: {integrity: sha512-9r7vOml2SrFA8cvbcJdSan9wHEo1TPXezF22+s5jvdyAAywg8w7HqDol6TPVv64NUonP1DOdyLxZ+6UW6WZiwg==}
@@ -1978,7 +1984,7 @@ packages:
     peerDependencies:
       '@rspack/core': '*'
     dependencies:
-      '@rspack/core': 1.3.2
+      '@rspack/core': 1.3.2(patch_hash=ly6njyzymtf65klwja2j2pz4nq)
       chokidar: 3.6.0
       express: 4.21.2
       http-proxy-middleware: 2.0.7(@types/express@4.17.21)

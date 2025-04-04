@@ -1,0 +1,41 @@
+diff --git a/dist/index.js b/dist/index.js
+index 0519671856da97c97e262845d87e48887d021469..7671ad20f3825ffc9e2fa95174255e6d905f3b8f 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -14005,6 +14005,12 @@ var Compiler = class _Compiler {
+     this.removedFiles = options.removedFiles;
+     const startTime = Date.now();
+     this.running = true;
++    const instanceBinding = require("@rspack/binding");
++    let isRuntimeShutdown = false;
++    if (isRuntimeShutdown) {
++      instanceBinding.startAsyncRuntime();
++      isRuntimeShutdown = false;
++    }
+     const finalCallback = (err, stats) => {
+       this.idle = true;
+       this.cache.beginIdle();
+@@ -14017,6 +14023,8 @@ var Compiler = class _Compiler {
+         callback(err, stats);
+       }
+       this.hooks.afterDone.call(stats);
++      instanceBinding.shutdownAsyncRuntime();
++      isRuntimeShutdown = true;
+     };
+     const onCompiled = (err, _compilation) => {
+       if (err) {
+@@ -14296,10 +14304,10 @@ var Compiler = class _Compiler {
+    * Lazy initialize instance so it could access the changed options
+    */
+   #getInstance(callback) {
+-    const error = checkVersion();
+-    if (error) {
+-      return callback(error);
+-    }
++    // const error = checkVersion();
++    // if (error) {
++    //   return callback(error);
++    // }
+     if (this.#instance) {
+       return callback(null, this.#instance);
+     }
