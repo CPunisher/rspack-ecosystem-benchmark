@@ -1,2 +1,3 @@
 packages:
   - 'cases/*'
+  - './rspack-wasi-binding'
