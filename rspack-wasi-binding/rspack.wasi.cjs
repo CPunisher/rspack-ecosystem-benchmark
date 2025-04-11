@@ -45,14 +45,6 @@ if (__nodeFs.existsSync(__wasmDebugFilePath)) {
   }
 }
 
-const workers = new Set()
-const shutdownWorkers = () => {
-  for (const worker of workers) {
-    worker.terminate()
-  }
-  workers.clear()
-}
-
 const { instance: __napiInstance, module: __wasiModule, napiModule: __napiModule } = __emnapiInstantiateNapiModuleSync(__nodeFs.readFileSync(__wasmFilePath), {
   context: __emnapiContext,
   asyncWorkPoolSize: (function() {
@@ -73,7 +65,8 @@ const { instance: __napiInstance, module: __wasiModule, napiModule: __napiModule
     worker.onmessage = ({ data }) => {
       __wasmCreateOnMessageForFsProxy(__nodeFs)(data)
     }
-    workers.add(worker)
+    worker.ref = () => {}
+    worker.unref();
     return worker
   },
   overwriteImports(importObject) {
@@ -115,11 +108,11 @@ module.exports.JsDependencies = __napiModule.exports.JsDependencies
 module.exports.JsEntries = __napiModule.exports.JsEntries
 module.exports.JsExportsInfo = __napiModule.exports.JsExportsInfo
 module.exports.JsModuleGraph = __napiModule.exports.JsModuleGraph
-module.exports.JsModuleGraphConnection = __napiModule.exports.JsModuleGraphConnection
 module.exports.JsResolver = __napiModule.exports.JsResolver
 module.exports.JsResolverFactory = __napiModule.exports.JsResolverFactory
 module.exports.JsStats = __napiModule.exports.JsStats
 module.exports.Module = __napiModule.exports.Module
+module.exports.ModuleGraphConnection = __napiModule.exports.ModuleGraphConnection
 module.exports.NormalModule = __napiModule.exports.NormalModule
 module.exports.RawExternalItemFnCtx = __napiModule.exports.RawExternalItemFnCtx
 module.exports.BuiltinPluginName = __napiModule.exports.BuiltinPluginName
@@ -130,8 +123,5 @@ module.exports.JsRspackSeverity = __napiModule.exports.JsRspackSeverity
 module.exports.RawRuleSetConditionType = __napiModule.exports.RawRuleSetConditionType
 module.exports.registerGlobalTrace = __napiModule.exports.registerGlobalTrace
 module.exports.RegisterJsTapKind = __napiModule.exports.RegisterJsTapKind
+module.exports.shutdownAsyncRuntime = __napiModule.exports.shutdownAsyncRuntime
 module.exports.startAsyncRuntime = __napiModule.exports.startAsyncRuntime
-module.exports.shutdownAsyncRuntime = () => {
-  __napiModule.exports.shutdownAsyncRuntime()
-  shutdownWorkers()
-}
