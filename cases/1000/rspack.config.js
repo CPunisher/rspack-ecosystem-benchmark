@@ -1,6 +1,6 @@
 module.exports = {
 	mode: "development",
-	devtools: false,
+	devtool: false,
 	entry: "./src/index.jsx",
 	resolve: {
 		extensions: [".js", ".jsx"]
