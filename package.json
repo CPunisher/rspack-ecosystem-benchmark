@@ -18,5 +18,10 @@
   "devDependencies": {
     "generate-package-json-webpack-plugin": "^2.6.0",
     "prettier": "^2.6.2"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@docusaurus/faster@3.7.0": "patches/@docusaurus__faster@3.7.0.patch"
+    }
   }
 }
