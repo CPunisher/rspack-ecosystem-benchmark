@@ -4,6 +4,11 @@ function readPackage(pkg) {
 			"@rspack/binding-wasm32-wasi": "link:rspack-wasi-binding"
 		};
 	}
+	if (pkg.name === "@docusaurus/faster") {
+		pkg.dependencies = {
+			"@rspack/core": "1.3.6"
+		};
+	}
 	return pkg;
 }
 
