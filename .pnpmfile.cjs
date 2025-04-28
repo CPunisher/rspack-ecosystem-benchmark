@@ -6,6 +6,7 @@ function readPackage(pkg) {
 	}
 	if (pkg.name === "@docusaurus/faster") {
 		pkg.dependencies = {
+			...pkg.dependencies,
 			"@rspack/core": "1.3.6"
 		};
 	}
