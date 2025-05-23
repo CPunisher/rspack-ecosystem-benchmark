@@ -281,6 +281,7 @@ module.exports = {
 		],
 	},
 	optimization: {
+		minimize: false,
 		splitChunks: {
 			chunks: 'all',
 			cacheGroups: {
