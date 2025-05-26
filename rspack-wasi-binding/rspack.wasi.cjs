@@ -9,9 +9,9 @@ const { WASI: __nodeWASI } = require("node:wasi");
 const { Worker } = require("node:worker_threads");
 
 const {
-	instantiateNapiModuleSync: __emnapiInstantiateNapiModuleSync,
+	createOnMessage: __wasmCreateOnMessageForFsProxy,
 	getDefaultContext: __emnapiGetDefaultContext,
-	createOnMessage: __wasmCreateOnMessageForFsProxy
+	instantiateNapiModuleSync: __emnapiInstantiateNapiModuleSync
 } = require("@napi-rs/wasm-runtime");
 
 const __rootDir = __nodePath.parse(process.cwd()).root;
@@ -76,8 +76,29 @@ const {
 		worker.onmessage = ({ data }) => {
 			__wasmCreateOnMessageForFsProxy(__nodeFs)(data);
 		};
-		worker.ref = () => {};
-		worker.unref();
+
+		// The main thread of Node.js waits for all the active handles before exiting.
+		// But Rust threads are never waited without `thread::join`.
+		// So here we hack the code of Node.js to prevent the workers from being referenced (active).
+		// According to https://github.com/nodejs/node/blob/19e0d472728c79d418b74bddff588bea70a403d0/lib/internal/worker.js#L415,
+		// a worker is consist of two handles: kPublicPort and kHandle.
+		{
+			const kPublicPort = Object.getOwnPropertySymbols(worker).find(s =>
+				s.toString().includes("kPublicPort")
+			);
+			if (kPublicPort) {
+				worker[kPublicPort].ref = () => {};
+			}
+
+			const kHandle = Object.getOwnPropertySymbols(worker).find(s =>
+				s.toString().includes("kHandle")
+			);
+			if (kPublicPort) {
+				worker[kHandle].ref = () => {};
+			}
+
+			worker.unref();
+		}
 		return worker;
 	},
 	overwriteImports(importObject) {
@@ -97,5 +118,57 @@ const {
 		}
 	}
 });
-
 module.exports = __napiModule.exports;
+module.exports.Assets = __napiModule.exports.Assets;
+module.exports.AsyncDependenciesBlock =
+	__napiModule.exports.AsyncDependenciesBlock;
+module.exports.BuildInfo = __napiModule.exports.BuildInfo;
+module.exports.Chunks = __napiModule.exports.Chunks;
+module.exports.CodeGenerationResult = __napiModule.exports.CodeGenerationResult;
+module.exports.CodeGenerationResults =
+	__napiModule.exports.CodeGenerationResults;
+module.exports.ConcatenatedModule = __napiModule.exports.ConcatenatedModule;
+module.exports.ContextModule = __napiModule.exports.ContextModule;
+module.exports.Dependency = __napiModule.exports.Dependency;
+module.exports.Diagnostics = __napiModule.exports.Diagnostics;
+module.exports.EntryDataDto = __napiModule.exports.EntryDataDto;
+module.exports.EntryDataDTO = __napiModule.exports.EntryDataDTO;
+module.exports.EntryDependency = __napiModule.exports.EntryDependency;
+module.exports.EntryOptionsDto = __napiModule.exports.EntryOptionsDto;
+module.exports.EntryOptionsDTO = __napiModule.exports.EntryOptionsDTO;
+module.exports.ExternalModule = __napiModule.exports.ExternalModule;
+module.exports.JsChunk = __napiModule.exports.JsChunk;
+module.exports.JsChunkGraph = __napiModule.exports.JsChunkGraph;
+module.exports.JsChunkGroup = __napiModule.exports.JsChunkGroup;
+module.exports.JsCompilation = __napiModule.exports.JsCompilation;
+module.exports.JsCompiler = __napiModule.exports.JsCompiler;
+module.exports.JsContextModuleFactoryAfterResolveData =
+	__napiModule.exports.JsContextModuleFactoryAfterResolveData;
+module.exports.JsContextModuleFactoryBeforeResolveData =
+	__napiModule.exports.JsContextModuleFactoryBeforeResolveData;
+module.exports.JsDependencies = __napiModule.exports.JsDependencies;
+module.exports.JsEntries = __napiModule.exports.JsEntries;
+module.exports.JsExportsInfo = __napiModule.exports.JsExportsInfo;
+module.exports.JsModuleGraph = __napiModule.exports.JsModuleGraph;
+module.exports.JsResolver = __napiModule.exports.JsResolver;
+module.exports.JsResolverFactory = __napiModule.exports.JsResolverFactory;
+module.exports.JsStats = __napiModule.exports.JsStats;
+module.exports.Module = __napiModule.exports.Module;
+module.exports.ModuleGraphConnection =
+	__napiModule.exports.ModuleGraphConnection;
+module.exports.NormalModule = __napiModule.exports.NormalModule;
+module.exports.RawExternalItemFnCtx = __napiModule.exports.RawExternalItemFnCtx;
+module.exports.Sources = __napiModule.exports.Sources;
+module.exports.BuiltinPluginName = __napiModule.exports.BuiltinPluginName;
+module.exports.cleanupGlobalTrace = __napiModule.exports.cleanupGlobalTrace;
+module.exports.formatDiagnostic = __napiModule.exports.formatDiagnostic;
+module.exports.JsLoaderState = __napiModule.exports.JsLoaderState;
+module.exports.JsRspackSeverity = __napiModule.exports.JsRspackSeverity;
+module.exports.minify = __napiModule.exports.minify;
+module.exports.RawRuleSetConditionType =
+	__napiModule.exports.RawRuleSetConditionType;
+module.exports.registerGlobalTrace = __napiModule.exports.registerGlobalTrace;
+module.exports.RegisterJsTapKind = __napiModule.exports.RegisterJsTapKind;
+module.exports.shutdownAsyncRuntime = __napiModule.exports.shutdownAsyncRuntime;
+module.exports.startAsyncRuntime = __napiModule.exports.startAsyncRuntime;
+module.exports.transform = __napiModule.exports.transform;
